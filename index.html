@@ -480,7 +480,6 @@ h3.muted-h {
 
 @media (prefers-reduced-motion:reduce) { *{animation:none!important;transition:none!important;} }
 
-
 .cphoto{height:76px;overflow:hidden;background:#eee8de;border-radius:var(--r) var(--r) 0 0}
 .cphoto img{width:100%;height:76px;object-fit:cover;display:block}
 .cbody{padding:9px 10px 10px;display:flex;flex-direction:column;gap:2px}
@@ -519,11 +518,91 @@ h3.muted-h {
 .sync-status{font-size:12px;padding:8px 12px;border-radius:8px;background:#fff3cd;color:#856404;margin-top:8px;border:1px solid #f0d078}
 .sync-status.ok{background:#d4edda;color:#155724;border-color:#b8dfc6}
 .btn.drive{background:var(--surface);border:1.5px solid #4285F4;color:#1a5cb8}
+
+/* ═══════════════════════════════════════════════════════
+   GANTT TABLE — day grid
+   ═══════════════════════════════════════════════════════ */
+.sched-outer { padding: 0; }
+.sched-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 0 0 4px; }
+.gtable { border-collapse: collapse; table-layout: fixed; }
+.gcorner { width: 88px; min-width: 88px; background: var(--surface); position: sticky; left: 0; z-index: 10; border-right: 2px solid var(--border-m); }
+.gmth { font-size: 11px; font-weight: 700; color: var(--teal); text-align: center; padding: 5px 2px; background: var(--bg); border-bottom: 1px solid var(--border); text-transform: capitalize; letter-spacing: .3px; border-right: 1px solid var(--border); }
+.gdth { width: var(--dpx, 32px); min-width: var(--dpx, 32px); max-width: var(--dpx, 32px); text-align: center; padding: 3px 0; background: var(--bg); border-bottom: 2px solid var(--border-m); border-right: 1px solid var(--border); }
+.gdth-n { display: block; font-size: 12px; font-weight: 700; color: var(--text); line-height: 1.2; }
+.gdth-d { display: block; font-size: 9.5px; color: var(--muted); text-transform: lowercase; }
+.gdth-t { background: var(--amber-l) !important; }
+.gdth-t .gdth-n { color: var(--amber) !important; }
+.gdth-w { background: #f8f4f0; }
+.gdth-w .gdth-n { color: var(--sub); }
+
+.glabel-td { position: sticky; left: 0; z-index: 5; background: var(--surface); border-right: 2px solid var(--border-m); padding: 4px 6px; width: 88px; min-width: 88px; max-width: 88px; vertical-align: middle; }
+.glbl-mk { font-size: 9.5px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 78px; }
+.gtable tbody tr { border-bottom: 1px solid var(--border); }
+.gtable tbody tr:hover { background: rgba(26,110,122,.03); }
+
+/* Empty cell */
+.gcell { width: var(--dpx, 32px); min-width: var(--dpx, 32px); max-width: var(--dpx, 32px); height: 34px; border-right: 1px solid var(--border); padding: 0; position: relative; transition: background .1s; }
+.gcell.gct { background: var(--amber-l) !important; border-right-color: rgba(232,150,10,.3); }
+.gcell.gcw { background: #faf8f6; }
+
+/* Booked cell */
+.gcb { cursor: pointer; border-top: 2.5px solid transparent; border-bottom: 2.5px solid transparent; }
+.gcb.cls-sedan  { background: var(--teal); border-color: #0e5560; }
+.gcb.cls-suv    { background: #5b4b9e; border-color: #3d3170; }
+.gcb.cls-pickup { background: #c47a20; border-color: #9a5f14; }
+.gcb.gcbf { border-left: 3px solid rgba(0,0,0,.25); border-radius: 5px 0 0 5px; }
+.gcb.gcbl { border-right: 3px solid rgba(0,0,0,.25); border-radius: 0 5px 5px 0; }
+.gcb.gcbf.gcbl { border-radius: 5px; }
+.gcb:active { opacity: .82; }
+
+/* Contract number label inside cell */
+.gcb-lbl { position: absolute; left: 4px; top: 50%; transform: translateY(-50%); font-size: 9px; font-weight: 800; color: rgba(255,255,255,.95); white-space: nowrap; pointer-events: none; text-shadow: 0 1px 2px rgba(0,0,0,.3); }
+
+/* ═══════════════════════════════════════════════════════
+   BOOKING POPUP
+   ═══════════════════════════════════════════════════════ */
+.bpop { position: fixed; inset: 0; z-index: 200; background: rgba(13,34,51,.7); display: flex; align-items: flex-end; justify-content: center; padding-bottom: var(--safe-b); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+.bpop.hidden { display: none; }
+.bp-card { background: var(--surface); border-radius: 20px 20px 0 0; width: 100%; max-width: 520px; max-height: 88vh; overflow-y: auto; padding-bottom: 16px; box-shadow: 0 -6px 30px rgba(13,34,51,.2); animation: slideup .25s ease; }
+@keyframes slideup { from { transform: translateY(60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.bp-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 16px 10px; border-bottom: 1px solid var(--border); }
+.bp-title { font-weight: 800; font-size: 15px; color: var(--navy); }
+.bp-x { background: var(--bg); border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 14px; color: var(--sub); cursor: pointer; display: grid; place-items: center; }
+.bp-body { padding: 12px 16px 4px; }
+.bp-name { font-size: 17px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+.bp-row { display: flex; justify-content: space-between; align-items: baseline; padding: 6px 0; font-size: 13.5px; gap: 10px; }
+.bp-row span { color: var(--sub); flex-shrink: 0; }
+.bp-row b { text-align: right; word-break: break-word; font-weight: 600; }
+.bp-sep { height: 1px; background: var(--border); margin: 6px 0; }
+.bp-total { font-size: 15px; }
+.bp-total span { color: var(--text); font-weight: 600; }
+.bp-total b { font-size: 17px; color: var(--teal); font-weight: 800; }
+
+/* ═══════════════════════════════════════════════════════
+   TECH PAGE
+   ═══════════════════════════════════════════════════════ */
+.tech-row { display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background .1s; -webkit-tap-highlight-color: transparent; }
+.tech-row:last-child { border-bottom: none; }
+.tech-row:active { background: var(--bg); }
+.tech-ic { font-size: 22px; flex-shrink: 0; width: 32px; text-align: center; }
+.tech-info { flex: 1; }
+.tech-info b { display: block; font-size: 14px; font-weight: 600; color: var(--text); }
+.tech-info span { font-size: 12px; color: var(--muted); }
+.tech-arr { font-size: 16px; color: var(--muted); flex-shrink: 0; }
+.tech-danger { border-left: 3px solid var(--red); }
+.tech-danger .tech-info b { color: var(--red); }
+
+.db-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.db-stat { text-align: center; padding: 8px 4px; background: var(--bg); border-radius: 8px; }
+.db-stat b { display: block; font-size: 16px; font-weight: 800; color: var(--navy); }
+.db-stat span { font-size: 10.5px; color: var(--muted); }
+.db-ts { font-size: 11px; color: var(--muted); text-align: center; }
 </style>
 </head>
 <body>
 <div id="app"></div>
 <script>
+
 
 /* ===== data.js v2 ===== */
 // ============================================================================\n// VEDRIVE — Seed data v2 (with hp, fuelAvg, insType, lastMileage, photo)\n// ============================================================================\n\n
@@ -1226,11 +1305,11 @@ const App = (() => {
 
   function navbar() {
     const tabs = [
-      ["home", "Новый", "＋"],
-      ["registry", "Реестр", "▤"],
-      ["schedule", "График", "▦"],
-      ["stats", "Отчёт", "▥"],
-      ["fleet", "Авто", "⚙"],
+      ["home", "Новый", "+"],
+      ["registry", "Реестр", "≡"],
+      ["schedule", "График", "◫"],
+      ["stats", "Отчёт", "↗"],
+      ["tech", "Техника", "⚙"],
     ];
     return `<nav class="tabbar">${tabs.map(([k, label, ic]) =>
       `<button class="tab ${view === k ? "active" : ""}" onclick="App.go('${k}')">
@@ -1766,58 +1845,117 @@ const App = (() => {
   function viewSchedule() {
     const db = DB.get();
     const active = db.contracts.filter(c => c.status !== "cancelled");
-    if (!active.length) return pageHeader("График аренды", "") + `<div class="wrap"><div class="empty">Нет активных договоров</div></div>`;
+    if (!active.length) return pageHeader("График аренды","") + `<div class="wrap"><div class="empty">Нет активных договоров</div></div>`;
 
     const minD = new Date(Math.min(...active.map(c => +new Date(c.start))));
     const maxD = new Date(Math.max(...active.map(c => +new Date(c.end))));
-    minD.setHours(0, 0, 0, 0); maxD.setHours(0, 0, 0, 0);
+    minD.setHours(0,0,0,0); maxD.setHours(0,0,0,0);
     const span = Math.max(1, daysBetween(minD, maxD) + 1);
+    const DAY_PX = 32;
 
-    // Month markers
-    const months = [];
-    let mk = new Date(minD);
-    while (mk <= maxD) {
-      const off = daysBetween(minD, mk) - 1;
-      months.push({ label: mk.toLocaleDateString("ru-RU", { month: "short" }), pos: (off / span) * 100 });
-      mk.setMonth(mk.getMonth() + 1); mk.setDate(1);
+    const days = [];
+    for (let i = 0; i < span; i++) {
+      const d = new Date(minD); d.setDate(d.getDate() + i);
+      days.push({
+        d, num: d.getDate(),
+        dow: d.toLocaleDateString("ru-RU",{weekday:"short"}).replace(".",""),
+        isToday: fmtDate(d) === fmtDate(new Date()),
+        isWeekend: d.getDay()===0||d.getDay()===6
+      });
     }
 
+    const monthCols = [];
+    let curMo = null;
+    days.forEach(h => {
+      const mo = h.d.toLocaleDateString("ru-RU",{month:"short"});
+      if (!curMo || curMo.label !== mo) { curMo={label:mo,count:1}; monthCols.push(curMo); }
+      else curMo.count++;
+    });
+
     const rows = db.fleet.map(car => {
-      const books = db.contracts.filter(c => c.plate === car.plate && c.status !== "cancelled");
-      const bars = books.map(b => {
-        const offStart = daysBetween(minD, b.start) - 1;
-        const len = daysBetween(b.start, b.end);
-        const left = (offStart / span) * 100;
-        const width = (len / span) * 100;
-        return `<div class="gbar cls-${car.cls}" style="left:${left}%;width:${width}%"
-          title="№${b.num} ${esc(b.lessee)}" onclick="App.openContract('${b.num}')">
-          <span>${esc(b.num)}</span></div>`;
+      const books = db.contracts.filter(c => c.plate===car.plate && c.status!=="cancelled");
+      const cells = days.map((h,i) => {
+        const t = h.d.getTime();
+        const book = books.find(b => {
+          const bs=new Date(b.start); bs.setHours(0,0,0,0);
+          const be=new Date(b.end);   be.setHours(0,0,0,0);
+          return t>=bs.getTime() && t<be.getTime();
+        });
+        if (!book) return `<td class="gcell${h.isToday?" gct":""}${h.isWeekend?" gcw":""}"></td>`;
+        const bs0=new Date(book.start); bs0.setHours(0,0,0,0);
+        const be0=new Date(book.end);   be0.setHours(0,0,0,0);
+        const isFirst = t===bs0.getTime();
+        const nx=new Date(h.d); nx.setDate(nx.getDate()+1);
+        const isLast = nx>=be0;
+        const cls = `gcell gcb cls-${car.cls}${isFirst?" gcbf":""}${isLast?" gcbl":""}${h.isToday?" gct":""}`;
+        return `<td class="${cls}" onclick="App.showBookingPopup('${book.num}')">${isFirst?`<span class="gcb-lbl">${esc(book.num)}</span>`:""}</td>`;
       }).join("");
-      return `
-        <div class="grow">
-          <div class="glabel"><span class="plate xs">${esc(car.plate || "—")}</span><small>${esc(car.make)}</small></div>
-          <div class="gtrack">${bars || `<span class="gfree">свободен</span>`}</div>
-        </div>`;
+      const nm = car.make.length>10?car.make.slice(0,9)+"…":car.make;
+      return `<tr><td class="glabel-td"><div class="plate xs">${esc(car.plate||"—")}</div><div class="glbl-mk">${esc(nm)}</div></td>${cells}</tr>`;
     }).join("");
 
-    const todayOff = daysBetween(minD, new Date()) - 1;
-    const todayPos = (todayOff >= 0 && todayOff <= span) ? (todayOff / span) * 100 : -1;
+    const dayHead = days.map(h =>
+      `<th class="gdth${h.isToday?" gdth-t":""}${h.isWeekend?" gdth-w":""}">
+        <span class="gdth-n">${h.num}</span><span class="gdth-d">${h.dow}</span>
+      </th>`).join("");
+
+    const moHead = monthCols.map(m =>
+      `<th class="gmth" colspan="${m.count}">${m.label}</th>`).join("");
 
     return `
-      ${pageHeader("График аренды", `${fmtDate(minD)} – ${fmtDate(maxD)}`)}
-      <div class="wrap wide">
-        <div class="gantt-wrap"><div class="gantt">
-          <div class="gmonths">${months.map(m => `<span style="left:${m.pos}%">${m.label}</span>`).join("")}
-            ${todayPos >= 0 ? `<div class="gtoday" style="left:${todayPos}%"></div>` : ""}</div>
-          ${rows}
+      ${pageHeader("График аренды", `${fmtDate(minD)} – ${fmtDate(maxD)} · ${span} дн.`)}
+      <div id="booking-popup" class="bpop hidden" onclick="if(event.target===this)this.classList.add('hidden')"></div>
+      <div class="sched-outer">
+        <div class="sched-scroll">
+          <table class="gtable" style="--dpx:${DAY_PX}px">
+            <thead>
+              <tr><th class="gcorner" rowspan="2"></th>${moHead}</tr>
+              <tr>${dayHead}</tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
         </div>
-        <div class="legend">
+        <div class="legend" style="padding:8px 14px 4px">
           <span class="lg cls-sedan">седан</span>
           <span class="lg cls-suv">SUV</span>
           <span class="lg cls-pickup">пикап</span>
           <span class="lg today">сегодня</span>
-        </div></div>
+        </div>
       </div>`;
+  }
+
+  function showBookingPopup(num) {
+    const db = DB.get();
+    const c = db.contracts.find(x => x.num === num);
+    if (!c) return;
+    const pop = document.getElementById("booking-popup");
+    if (!pop) return;
+    const optLines = Object.entries(c.opts||{}).filter(([,v])=>Number(v)>0).map(([id,v])=>{
+      const o = db.options.find(x=>x.id===id);
+      return `<div class="bp-row"><span>${esc(o?o.label:id)}</span><b>${money(v)} ฿</b></div>`;
+    }).join("");
+    pop.innerHTML = `
+      <div class="bp-card">
+        <div class="bp-head">
+          <span class="bp-title">Договор № ${esc(c.num)}</span>
+          <button class="bp-x" onclick="document.getElementById('booking-popup').classList.add('hidden')">✕</button>
+        </div>
+        <div class="bp-body">
+          <div class="bp-name">${esc(c.lessee)}</div>
+          <div class="bp-row"><span>📞 Телефон</span><b>${esc(c.phone||"—")}</b></div>
+          <div class="bp-row"><span>🏨 Адрес доставки</span><b>${esc(c.hotel||"—")}</b></div>
+          <div class="bp-sep"></div>
+          <div class="bp-row"><span>🚗 Авто</span><b>${esc(c.make)} · ${esc(c.plate||"—")}</b></div>
+          <div class="bp-row"><span>▶ Начало</span><b>${DOC.fmtDateTime(c.start)}</b></div>
+          <div class="bp-row"><span>■ Окончание</span><b>${DOC.fmtDateTime(c.end)}</b></div>
+          <div class="bp-row"><span>📏 Пробег</span><b>${c.mileageOut?c.mileageOut.toLocaleString("ru-RU")+" км":"—"}</b></div>
+          ${optLines?`<div class="bp-sep"></div>${optLines}`:""}
+          <div class="bp-sep"></div>
+          <div class="bp-row bp-total"><span>Итого</span><b>${money(c.total)} ฿</b></div>
+        </div>
+        <button class="btn primary" style="margin:12px 14px 0;width:calc(100% - 28px)" onclick="document.getElementById('booking-popup').classList.add('hidden');App.openContract('${c.num}')">Открыть договор →</button>
+      </div>`;
+    pop.classList.remove("hidden");
   }
 
   // ════════════════════════════════════════════════════════════════════════
@@ -1890,6 +2028,44 @@ const App = (() => {
       </div>`;
   }
 
+  function exportScheduleCSV() {
+    const db = DB.get();
+    if (!db.contracts.length){toast("Нет данных","err");return;}
+    const head = ["Гос. номер","Марка","Дата","Статус","№ договора","Арендатор"];
+    const rows = [];
+    const dates = db.contracts.flatMap(c=>[new Date(c.start),new Date(c.end)]);
+    const minD = new Date(Math.min(...dates)); minD.setHours(0,0,0,0);
+    const maxD = new Date(Math.max(...dates)); maxD.setHours(0,0,0,0);
+    for(let d=new Date(minD); d<=maxD; d.setDate(d.getDate()+1)){
+      const ds = fmtDate(new Date(d));
+      db.fleet.forEach(car=>{
+        const book = db.contracts.find(c=>c.plate===car.plate&&c.status!=="cancelled"&&new Date(c.start)<=d&&new Date(c.end)>d);
+        rows.push([car.plate,car.make,ds,book?"занят":"свободен",book?book.num:"",book?book.lessee:""].map(v=>`"${v||""}"`).join(","));
+      });
+    }
+    const csv="\ufeff"+[head.join(","),...rows].join("\r\n");
+    const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+    a.download="vedrive_schedule.csv"; a.click(); toast("График выгружен");
+  }
+
+  function exportStatsCSV() {
+    const db = DB.get();
+    const active = db.contracts.filter(c=>c.status!=="cancelled");
+    const byCar = {};
+    active.forEach(c=>{
+      const k=c.plate||"—";
+      if(!byCar[k]) byCar[k]={plate:k,make:c.make,count:0,rev:0,days:0};
+      byCar[k].count++; byCar[k].rev+=c.total||0; byCar[k].days+=c.days||0;
+    });
+    const head = ["Гос. номер","Марка","Договоров","Дней","Доход ฿"];
+    const rows = Object.values(byCar).sort((a,b)=>b.rev-a.rev).map(r=>[r.plate,r.make,r.count,r.days,r.rev].map(v=>`"${v}"`).join(","));
+    const tv=active.reduce((s,c)=>s+(c.total||0),0);
+    rows.push(['"ИТОГО"','""',`"${active.length}"`,`"${active.reduce((s,c)=>s+(c.days||0),0)}"`,`"${tv}"`].join(","));
+    const csv="\ufeff"+[head.join(","),...rows].join("\r\n");
+    const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+    a.download="vedrive_stats.csv"; a.click(); toast("Отчёт выгружен");
+  }
+
   function exportCSV() {
     const db = DB.get();
     const head = ["Номер","Подписан","ФИО","Паспорт","МВУ","Телефон","Отель","Авто","ГосНомер","Начало","Окончание","Дней","Аренда","Предоплата","Залог","Итого","Статус"];
@@ -1908,7 +2084,9 @@ const App = (() => {
   // FLEET & SETTINGS
   // ════════════════════════════════════════════════════════════════════════
   const insLabel = t => ({standard:"стандартная",full:"полное покрытие"}[t]||t||"—");
-  function viewFleet() {
+  function viewFleet() { return viewTech(); }
+
+  function viewTech() {
     const db = DB.get();
     const cars = db.fleet.map(car => {
       const lastKm = DB.lastMileageForPlate(car.plate);
@@ -1932,43 +2110,72 @@ const App = (() => {
       </div>`;}).join("");
 
     const syncUrl = DB.getSyncUrl();
+    const activeC = db.contracts.filter(c=>c.status!=="cancelled").length;
+    const totalRev = db.contracts.filter(c=>c.status!=="cancelled").reduce((s,c)=>s+(c.total||0),0);
 
     return `
-      ${pageHeader("Автопарк и настройки", `${db.fleet.length} авто`)}
+      ${pageHeader("Техника · Система", `${db.fleet.length} авто · ${activeC} дог.`)}
       <div class="wrap">
+        <h3 class="muted-h">🚗 Автопарк</h3>
         <button class="btn primary" onclick="App.editCar()">+ Добавить авто</button>
         <div class="fleet-grid">${cars}</div>
 
-        <h3 class="muted-h">База данных</h3>
-        <div class="card">
-          <button class="btn ghost" onclick="App.exportDB()">⬇ Выгрузить базу (резервная копия)</button>
-          <label class="btn ghost filelabel">⬆ Загрузить базу из файла
-            <input type="file" accept=".json" hidden onchange="App.importDB(event)"></label>
-          <button class="btn ghost danger" onclick="App.resetDB()">Сбросить к исходным данным</button>
+        <h3 class="muted-h">📊 Выгрузка данных</h3>
+        <div class="card tight">
+          <div class="tech-row" onclick="App.exportCSV()">
+            <span class="tech-ic">📋</span><div class="tech-info"><b>Реестр договоров</b><span>CSV</span></div><span class="tech-arr">⬇</span>
+          </div>
+          <div class="tech-row" onclick="App.exportScheduleCSV()">
+            <span class="tech-ic">📅</span><div class="tech-info"><b>График аренды</b><span>Занятость авто · CSV</span></div><span class="tech-arr">⬇</span>
+          </div>
+          <div class="tech-row" onclick="App.exportStatsCSV()">
+            <span class="tech-ic">📈</span><div class="tech-info"><b>Отчёт по доходам</b><span>По авто · CSV</span></div><span class="tech-arr">⬇</span>
+          </div>
+          <div class="tech-row" onclick="App.exportDB()">
+            <span class="tech-ic">💾</span><div class="tech-info"><b>Резервная копия базы</b><span>Полный экспорт · JSON</span></div><span class="tech-arr">⬇</span>
+          </div>
         </div>
 
-        <h3 class="muted-h">Google Drive и синхронизация</h3>
+        <h3 class="muted-h">📥 Загрузка</h3>
+        <div class="card tight">
+          <label class="tech-row" style="cursor:pointer">
+            <span class="tech-ic">📂</span><div class="tech-info"><b>Загрузить базу</b><span>Восстановить из JSON</span></div><span class="tech-arr">⬆</span>
+            <input type="file" accept=".json" hidden onchange="App.importDB(event)">
+          </label>
+          <div class="tech-row tech-danger" onclick="App.resetDB()">
+            <span class="tech-ic">🔄</span><div class="tech-info"><b>Сбросить к исходным данным</b><span>13 договоров из Excel</span></div>
+          </div>
+        </div>
+
+        <h3 class="muted-h">📦 База данных</h3>
+        <div class="card">
+          <div class="db-grid">
+            <div class="db-stat"><b>${db.fleet.length}</b><span>авто</span></div>
+            <div class="db-stat"><b>${db.contracts.length}</b><span>всего дог.</span></div>
+            <div class="db-stat"><b>${activeC}</b><span>активных</span></div>
+            <div class="db-stat"><b>${money(totalRev)}</b><span>฿ доход</span></div>
+          </div>
+          <div class="db-ts">Обновлено: ${db.updatedAt?new Date(db.updatedAt).toLocaleString("ru-RU"):"—"}</div>
+        </div>
+
+        <h3 class="muted-h">☁️ Google Drive</h3>
         <div class="card">
           <div class="drive-info">
             <span class="drive-icon">📂</span>
-            <div>
-              <b>Папка для договоров</b>
-              <a class="drive-link" href="https://drive.google.com/drive/folders/10MaOKbahMwi27r9Y02nl2cHVHt14hmY-" target="_blank">
-                Договора → открыть на Google Drive
-              </a>
+            <div><b>Папка договоров</b>
+              <a class="drive-link" href="https://drive.google.com/drive/folders/10MaOKbahMwi27r9Y02nl2cHVHt14hmY-" target="_blank">Договора → открыть ↗</a>
             </div>
           </div>
-          <p class="note">Вставьте URL Google Apps Script Web App для сохранения договоров напрямую в папку и синхронизации базы. Код скрипта — в файле <b>apps-script.gs</b>.</p>
           <label class="fld"><span>URL Google Apps Script</span>
             <input id="sync-url" value="${esc(syncUrl)}" placeholder="https://script.google.com/macros/s/…/exec"></label>
           <button class="btn primary" onclick="App.saveSync()">Сохранить</button>
           <div class="dlrow">
-            <button class="btn ghost" onclick="App.cloudPush()">⬆ Синхронизировать базу</button>
-            <button class="btn ghost" onclick="App.cloudPull()">⬇ Загрузить из облака</button>
+            <button class="btn ghost" onclick="App.cloudPush()">⬆ В облако</button>
+            <button class="btn ghost" onclick="App.cloudPull()">⬇ Из облака</button>
           </div>
-          ${syncUrl ? `<div class="sync-status ok">✓ Apps Script подключён — договоры будут сохраняться в Google Drive</div>` : `<div class="sync-status">⚠ URL не задан — сохранение в Drive недоступно</div>`}
+          ${syncUrl?`<div class="sync-status ok">✓ Подключено</div>`:`<div class="sync-status">⚠ URL не задан</div>`}
         </div>
-        <div class="appfoot">VEDRIVE · локальная база · данные хранятся на устройстве</div>
+        <div class="appfoot">VEDRIVE v4 · данные на устройстве</div>
       </div>`;
   }
 
@@ -2117,10 +2324,10 @@ const App = (() => {
     const views = {
       home: viewHome, "pick-car": viewPickCar, pricing: viewPricing,
       driver: viewDriver, review: viewReview,
-      registry: viewRegistry, schedule: viewSchedule, stats: viewStats, fleet: viewFleet,
+      registry: viewRegistry, schedule: viewSchedule, stats: viewStats, tech: viewTech, fleet: viewTech, fleet: viewFleet,
     };
     const fn = views[view] || viewHome;
-    const showNav = ["home", "registry", "schedule", "stats", "fleet"].includes(view);
+    const showNav = ["home", "registry", "schedule", "stats", "tech", "fleet"].includes(view);
     $("#app").innerHTML = fn() + (showNav ? navbar() : navbar()) + `<div id="toasts"></div>`;
 
     if (view === "home") {
@@ -2142,7 +2349,7 @@ const App = (() => {
     findCars, chooseCar, toggleOpt, setOpt, recalc, confirmPricing, confirmDriver,
     createContract, dlDoc, dlPdf, previewContract, saveToDrive,
     setRegSearch, openContract, cancelContract, restoreContract, previewCarPhoto, recalcMileage,
-    exportCSV, exportDB, importDB, resetDB,
+    showBookingPopup, exportCSV, exportScheduleCSV, exportStatsCSV, exportDB, importDB, resetDB,
     editCar, saveCar, removeCar,
     saveSync, cloudPush, cloudPull,
   };
@@ -2152,6 +2359,8 @@ const App = (() => {
 
 
 /* ===== boot ===== */
+App.init();
+
 App.init();
 
 App.init();
