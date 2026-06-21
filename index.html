@@ -640,28 +640,35 @@ function docHTML(){
 return `<!DOCTYPE html><html><head><meta charset="utf-8">
 <style>
 *{box-sizing:border-box}
-body{font-family:"Times New Roman",Times,serif;font-size:10pt;line-height:1.4;color:#000;margin:0;background:#fff}
-.page{width:210mm;min-height:297mm;margin:0 auto;padding:16mm 18mm 14mm;position:relative}
-h2{font-size:12pt;text-align:center;margin:0 0 2pt;text-transform:uppercase;font-weight:bold}
-.ctr{text-align:center;font-size:9pt;color:#444;margin-bottom:8pt}
-p{margin:2pt 0;font-size:9.5pt;text-align:justify}
+body{font-family:"Times New Roman",Times,serif;font-size:8.5pt;line-height:1.25;color:#000;margin:0;background:#fff}
+.page{width:210mm;height:297mm;margin:0 auto;padding:10mm 17mm 9mm;overflow:hidden;page-break-after:always;page-break-inside:avoid}
+h2{font-size:10.5pt;text-align:center;margin:0 0 2pt;text-transform:uppercase;font-weight:bold}
+.ctr{text-align:center;font-size:8pt;color:#444;margin-bottom:5pt}
+p{margin:1pt 0;font-size:8.5pt;text-align:justify;line-height:1.25}
 .b{font-weight:bold}
-.sec{font-weight:bold;font-size:9.5pt;text-transform:uppercase;margin:7pt 0 2pt;display:block}
-table{width:100%;border-collapse:collapse;margin:3pt 0;font-size:8.5pt}
-td,th{border:1px solid #666;padding:2pt 4pt;vertical-align:top}
-th{background:#1a3a2a;color:#fff;text-align:center;font-size:8pt;font-weight:bold}
+.sec{font-weight:bold;font-size:8.5pt;text-transform:uppercase;margin:4pt 0 1pt;display:block}
+table{width:100%;border-collapse:collapse;margin:2pt 0;font-size:7.5pt}
+td,th{border:1px solid #666;padding:1.5pt 3pt;vertical-align:top}
+th{background:#1a3a2a;color:#fff;text-align:center;font-size:7pt;font-weight:bold}
 .vc{text-align:center;white-space:nowrap;font-weight:bold}
 .yes{text-align:center}
 .no{text-align:center;color:#999}
-.two{display:table;width:100%;border-collapse:collapse;margin-top:5pt}
-.cl{display:table-cell;vertical-align:top;width:46%;padding-right:4pt}
-.cr{display:table-cell;vertical-align:top;width:54%;padding-left:4pt}
-.ft{text-align:center;font-size:7.5pt;color:#555;margin-top:8pt;border-top:1px solid #bbb;padding-top:4pt}
-.sig{margin-top:8pt}
-.sr{margin:4pt 0;font-size:9.5pt}
-hr{page-break-before:always;border:none;margin:0}
+.two{display:table;width:100%;border-collapse:collapse;margin-top:3pt}
+.cl{display:table-cell;vertical-align:top;width:46%;padding-right:3pt}
+.cr{display:table-cell;vertical-align:top;width:54%;padding-left:3pt}
+.ft{text-align:center;font-size:6.5pt;color:#555;margin-top:5pt;border-top:1px solid #bbb;padding-top:2pt}
+.sig{margin-top:5pt}
+.sr{margin:2pt 0;font-size:8.5pt}
+.page2{font-size:8pt;line-height:1.22}
+.page2 p{font-size:8pt;line-height:1.22;margin:0.8pt 0}
+.page2 .sec{font-size:8pt;margin:3pt 0 1pt}
+.page2 .sr{font-size:8pt}
+hr{page-break-after:always;border:none;margin:0;height:0;display:block}
 @page{size:A4;margin:0}
-@media print{.page{padding:14mm 18mm 12mm}}
+@media print{
+  .page{height:297mm;page-break-after:always;page-break-inside:avoid}
+  hr{page-break-after:always}
+}
 </style></head><body>
 
 <!-- ═════ PAGE 1: ENGLISH ═════ -->
@@ -720,7 +727,7 @@ hr{page-break-before:always;border:none;margin:0}
 
 <!-- ═════ PAGE 2: RUSSIAN ═════ -->
 <hr>
-<div class="page">
+<div class="page page2">
 <h2>ДОГОВОР АРЕНДЫ АВТОМОБИЛЯ № «${D.num}»</h2>
 <div class="ctr">${CO.name}</div>
 
@@ -738,7 +745,7 @@ hr{page-break-before:always;border:none;margin:0}
 
 <span class="sec">3. АРЕНДНАЯ ПЛАТА И ЗАЛОГ</span>
 <p>3.1. Арендатор обязуется уплатить Арендодателю сумму аренды в размере ${_v((D.rent||"_ _ _ _")+" бат")} за весь срок аренды, без дополнительных опций. Оплата за бронирование автомобиля внесена ${_v((D.prepay||"0")+" бат")}. Указанная сумма будет зачтена при окончательном расчете в момент получения авто.</p>
-<p>3.2. Оплата производится в полном объеме до начала аренды Автомобиля. В случае, если у Вас поменяются планы и Вы решите сдать автомобиль ранее срока окончания Договора, мы не сможем пересчитать сумму арендной платы. Нам будет очень сложно сдать его на дни, от которых Вы отказались, он проведет эти дни на парковке в ожидании арендатора, который забронировал после Вас.</p>
+<p>3.2. Оплата производится в полном объеме до начала аренды Автомобиля. В случае досрочного возврата Автомобиля перерасчет суммы арендной платы не производится.</p>
 <p>3.3. Арендатор обязуется внести залог в размере 200$/5000THB (сумма залога) в момент заключения договора. Залог возвращается Арендатору в полном объеме, если это наличные, то сразу, если банковский перевод, то в течение 24-х часов после возврата Автомобиля в том же состоянии, в каком Арендатор получил автомобиль, за исключением случаев удержания части залога на покрытие ущерба, нанесенного в процессе аренды.</p>
 
 <span class="sec">4. ОБЯЗАННОСТИ СТОРОН</span>
